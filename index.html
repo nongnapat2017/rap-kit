@@ -67,4 +67,88 @@
     <audio data-keyCode="65" src="sounds/sut.wav"></audio>
     <audio data-keyCode="79" src="sounds/or.wav"></audio>
 </body>
+<!-- <script>
+    //window คือ root ของ document
+    //keyCode  มันจะตรงกันในทุกๆ keyboard
+    window.addEventListener("keydown", function(event) {
+        // document คือทั้งหมด
+        // const key = document.querySelector(".key[data-keyCode='" + event.keyCode +"']")
+        const key = document.querySelector(`.key[data-keyCode="${event.keyCode}"]`) //ES6 string template
+        const audio = document.querySelector(`audio[data-keyCode="${event.keyCode}"]`)
+        if (!key) return;
+        if(key.classList.contains("loop")) {
+            if (!audio.paused) {
+                audio.pause()
+                key.classList.remove("looping");
+                return;
+            }
+            key.classList.add("looping");
+            audio.volume = .2;
+        }else {
+            key.classList.add("playing")
+        }
+        audio.currentTime = 0;
+        audio.play();
+        // setTimeout(function() {
+        //     key.classList.remove("playing")
+        // }, 50)
+
+        console.log(event.keyCode) //event คือ dependency injection 
+
+
+    });
+
+    const keys = document.querySelectorAll(".key");
+    keys.forEach(function (key) {
+        key.addEventListener("transitionend", function (event) { //transitionend เป็นชื่อของ event มาตรฐาน
+            if(event.propertyName !== "transform" || this.classList.contains("loop")) return;
+            // event.target.classList.remove("playing")
+            this.classList.remove("playing") //this คือ key
+            console.log(event)
+        });
+    });
+</script>  -->
+
+<!-- ทำการ refactor code -->
+<script>
+    function playSound(event) { //ให้ DI จัดการ event opject ให้
+        const key = document.querySelector(`.key[data-keyCode="${event.keyCode}"]`) //ES6 string template
+        const audio = document.querySelector(`audio[data-keyCode="${event.keyCode}"]`)
+        if (!key) return;
+        const applyClass = key.classList.contains("loop") ? "looping" : "playing";
+        if(applyClass === "looping") {
+            if (!audio.paused) {
+                audio.pause()
+                key.classList.remove("looping");
+                return;
+            }
+            audio.volume = .2;
+        }
+        key.classList.add(applyClass)
+        audio.currentTime = 0;
+        audio.play();
+        // setTimeout(function() {
+        //     key.classList.remove("playing")
+        // }, 50)
+
+        console.log(event.keyCode) //event คือ dependency injection 
+    }
+    //window คือ root ของ document
+    //keyCode  มันจะตรงกันในทุกๆ keyboard
+    window.addEventListener("keydown", playSound);
+
+    function removeStyle(event) {
+        if(event.propertyName !== "transform" || this.classList.contains("loop")) return;
+            // event.target.classList.remove("playing")
+            this.classList.remove("playing") //this คือ key
+            console.log(event)
+        
+    }
+    const keys = document.querySelectorAll(".key");
+    // keys.forEach(function (key) {
+    //     key.addEventListener("transitionend", removeStyle);
+    // });
+
+    keys.forEach(key => key.addEventListener("transitionend", removeStyle)); //ES6 syntax
+</script> 
 </html>
